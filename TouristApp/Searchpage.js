@@ -7,7 +7,9 @@ export default class Searchpage extends Component {
     constructor(props){
         super(props);
         this.state = {
-            searchString: 'london'
+            searchString: 'london',
+            isLoading: false,
+            message: '',
         }
     }
 _onSearchTextChanged = (event) => {
@@ -15,24 +17,65 @@ _onSearchTextChanged = (event) => {
     this.setState({searchString: event.nativeEvent.text});
     console.log('Current: ' + this.state.searchString + ',Next: ' + event.nativeEvent.text);
 }
-
+_onSearchPressed = () => {
+    const query = urlForQueryAndPage('place_name', this.state.searchString,1);
+    this._executeQuery(query);
+}
+_executeQuery = (query) => {
+    console.log(query);
+    this.setState({
+        isLoading: true
+    })
+    fetch(query)
+    .then(response => response.json())
+    .then(json => this._handleResponse(json.response))
+    .catch(error => 
+        this.setState({
+            isLoading: false,
+            message: 'Something bad happened' + error
+        })
+        )
+}
     static navigationOptions = {
         title: "Search"
     }
     render(){
+        const spinner = this.state.isLoading ? <ActivityIndicator size='large' /> : null;
         console.log('Searchpage.render')
+
         return(
             <View style={styles.container}>
                 <Text style={styles.description}>Search for houses to buy!</Text>
                 <Text style={styles.description}>Search by place-name or postcode.</Text>
                 <View style={styles.flowRight}>
                     <TextInput placeholder='Search via name or postcode' style={styles.searchInput} value={this.state.searchString} onChange={this._onSearchTextChanged} />
-                    <Button onPress={() => {}} color='#48BBEC' title='Go'/>
+                    <Button onPress={this._onSearchPressed} color='#48BBEC' title='Go'/>
                 </View>
                 <Image source={require('./Resources/house.png')} style={styles.image} />
+                {spinner}
+                <Text style={styles.description}>{this.state.message}</Text>
             </View>
         )
     }
+}
+
+function urlForQueryAndPage(key, value, pageNumber) {
+    const data = {
+        country: 'uk',
+        pretty: '1',
+        encoding: 'json',
+        listing_type: 'buy',
+        action: 'search_listings',
+        page: pageNumber,
+    }
+
+    data[key] = value;
+
+    const queryString = Object.keys(data)
+        .map(key => key + '=' + encodeURIComponent(data[key]))
+        .join('&');
+
+        return 'https://api.nestoria.co.uk/api?' + queryString;
 }
 
 const styles = StyleSheet.create({
