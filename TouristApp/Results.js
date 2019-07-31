@@ -1,7 +1,8 @@
 'use strict';
 
 import React, {Component} from 'react';
-import {Text, View, TextInput, Button, StyleSheet, FlatList, TouchableHighlight, Image} from 'react-native';
+import {View, TextInput, StyleSheet, FlatList, TouchableHighlight, Image} from 'react-native';
+import { Card, CardItem, Header, Left, Body,  Right, Thumbnail, Text} from 'native-base';
 
 class ListItem extends React.PureComponent {
     _onPress = () => {
@@ -12,20 +13,20 @@ class ListItem extends React.PureComponent {
         const item = this.props.item;
         const price = item.price_formatted.split(' ')[0]
         return(
-            <TouchableHighlight
-            onPress={this._onPress}
-            underlayColor='#dddddd' >
-            <View>
-            <View style={styles.rowContainer}>
-            <Image style={styles.thumb} source={{ uri: item.img_url }} />
-            <View style={styles.textContainer}>
-            <Text style={styles.price}>{price}</Text>
-            <Text style={styles.title} numberOfLines={1}>{item.title}</Text>
-            </View>
-            </View>
-            <View style={styles.separator} />
-            </View>
-            </TouchableHighlight>
+            <Card>
+                <CardItem>
+                    <Left>
+                    <Thumbnail source={{ uri: item.img_url }} />
+                    <Body>
+                        <Text styles={styles.price}>{price}</Text>
+                        <Text style={styles.title} numberOfLines={1}>{item.title}</Text>
+                    </Body>
+                    </Left>
+                </CardItem>
+                <CardItem cardBody>
+                    <Image source={{ uri: item.img_url }} style={{ height: 200, width: null, flex: 1}}/>
+                </CardItem>
+            </Card>
         )
     }
 }
