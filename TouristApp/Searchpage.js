@@ -46,6 +46,7 @@ _handleResponse = (response) => {
         this.props.navigation.navigate('Results',{
             listings: response.listings
         })
+       
 
     } else {
         this.setState({
