@@ -3,6 +3,7 @@
 import {Text, View, StyleSheet, TextInput, Button, ActivityIndicator, Image} from 'react-native';
 import React, {Component} from 'react';
 
+
 export default class Searchpage extends Component {
     constructor(props){
         super(props);
@@ -11,16 +12,16 @@ export default class Searchpage extends Component {
             isLoading: false,
             message: '',
         }
-    }
+    };
 _onSearchTextChanged = (event) => {
     console.log('_onSearchTextChanged');
     this.setState({searchString: event.nativeEvent.text});
     console.log('Current: ' + this.state.searchString + ',Next: ' + event.nativeEvent.text);
-}
+};
 _onSearchPressed = () => {
     const query = urlForQueryAndPage('place_name', this.state.searchString,1);
     this._executeQuery(query);
-}
+};
 _executeQuery = (query) => {
     console.log(query);
     this.setState({
@@ -35,7 +36,23 @@ _executeQuery = (query) => {
             message: 'Something bad happened' + error
         })
         )
-}
+};
+_handleResponse = (response) => {
+    this.setState({
+        isLoading: false,
+        message: ''
+    })
+    if(response.application_response_code.substr(0,1) === '1') {
+        this.props.navigation.navigate('Results',{
+            listings: response.listings
+        })
+
+    } else {
+        this.setState({
+            message: 'Location not recognized; please try again.'
+        });
+    }
+};
     static navigationOptions = {
         title: "Search"
     }
